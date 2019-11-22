@@ -136,14 +136,14 @@ class cart{
 
             itemsPromiseResult.map((eachItem,index) =>{
                
-                itemMap[eachItem["data"][index]["_id"]] = eachItem["data"][index]["item_cost"]
+                itemMap[eachItem["data"][0]["_id"]] = eachItem["data"][0]["item_cost"]
 
-                totalCostItems = totalCostItems + eachItem["data"][index]["item_cost"]*cartData[index]["count"];
+                totalCostItems = totalCostItems + eachItem["data"][0]["item_cost"]*cartData[index]["count"];
             })
 
             privilegePromisesResult.map((eachPrivilege) =>{
                 console.log(eachPrivilege);
-                if(privilege["data"] && privilege["data"].length){
+                if(eachPrivilege["data"] && eachPrivilege["data"].length){
                     privilege[eachPrivilege["data"][0]["item"]] = eachPrivilege["data"][0];
 
                 }
@@ -171,7 +171,7 @@ class cart{
 
         cartData.map((eachItem)=>{
 
-            if(privilege && Object.keys(privilege).length){
+            if(privilege && Object.keys(privilege).length && privilege[eachItem.item]){
 
                 let privilegeTemp = privilege[eachItem.item];
 
@@ -209,8 +209,13 @@ class cart{
                     }
                 }
 
-                if(!(privilegeTemp["min_items_order"] && (eachItem["count"] >= privilegeTemp["min_items_order"] )) ){
-                    continueObj = false;
+                // if(!(privilegeTemp["min_items_order"] && (eachItem["count"] >= privilegeTemp["min_items_order"] || !privilegeTemp["min_items_order"] )) ){
+                //     continueObj = false;
+                // }
+                if(privilegeTemp["min_items_order"]){
+                    if(!(eachItem["count"] >= privilegeTemp["min_items_order"])){
+                        continueObj = false;
+                    }
                 }
 
                 if(privilegeTemp["privilege_type"] == "x_for_Y"  && continueObj){
@@ -234,6 +239,8 @@ class cart{
 
                 }
 
+            }else{
+                totalCost = totalCost + (eachItem["count"] * itemMap[eachItem.item]);
             }
             
 
